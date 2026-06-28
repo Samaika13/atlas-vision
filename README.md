@@ -1,17 +1,20 @@
-# JARVIS Vision
+# ATLAS
 
-An AI-powered desktop assistant inspired by Iron Man's HUD.
+**Adaptive Technological Learning Assistance System**
 
-## Features (Planned)
+ATLAS is a cinematic AI desktop assistant inspired by futuristic human-computer interfaces. It combines computer vision, voice interaction, gesture recognition, memory, and large language models into one unified assistant.
 
-- 🎥 Live Camera Feed
-- 😀 Face Tracking
-- ✋ Hand Tracking
+## Planned Features
+
+- 🎥 Real-time camera
+- 😀 Face recognition
+- ✋ Hand tracking
 - 🖥️ Futuristic HUD
-- 🎙️ Voice Commands
-- 🤖 AI Assistant
-- 👁️ Object Recognition
-- 🎯 Gesture Control
+- 🎙️ Voice conversations
+- 🧠 Long-term memory
+- 👁️ Object recognition
+- ⚡ Gesture control
+- 💻 Desktop automation
 
 ## Tech Stack
 
@@ -20,7 +23,5 @@ An AI-powered desktop assistant inspired by Iron Man's HUD.
 - MediaPipe
 - NumPy
 - Pygame
-
-## Status
-
-🚧 Under Development
+- Ollama (optional)
+- Whisper
