@@ -1,4 +1,4 @@
-WINDOW TITLE = "ATLAS Vision"
+WINDOW_TITLE = "ATLAS Vision"
 
 MIRROR_CAMERA = True
 
