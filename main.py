@@ -1,8 +1,10 @@
-from vision.camera import Camera
+from core.engine import AtlasEngine
+
 
 def main():
-    camera = Camera()
-    camera.start()
+    atlas = AtlasEngine()
+    atlas.run()
+
 
 if __name__ == "__main__":
     main()

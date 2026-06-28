@@ -1,8 +1,15 @@
 import cv2
 import time
 
-from core.config import WINDOW_TITLE, MIRROR_CAMERA, CAMERA_INDEX
-from vision.face_detector import FaceDetector
+from core.config import (
+    WINDOW_TITLE,
+    WINDOW_WIDTH,
+    WINDOW_HEIGHT,
+    CAMERA_INDEX,
+    MIRROR_CAMERA,
+)
+
+from hud.renderer import HUDRenderer
 
 
 class Camera:
@@ -11,64 +18,24 @@ class Camera:
 
         self.cap = cv2.VideoCapture(CAMERA_INDEX)
 
-        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
-        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
-
-        self.detector = FaceDetector()
+        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, WINDOW_WIDTH)
+        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, WINDOW_HEIGHT)
 
         self.prev_time = time.time()
 
-    def draw_reticle(self, frame, x, y, w, h):
-
-        color = (255, 200, 0)
-
-        thickness = 2
-
-        length = 25
-
-        # Top Left
-        cv2.line(frame, (x, y), (x + length, y), color, thickness)
-        cv2.line(frame, (x, y), (x, y + length), color, thickness)
-
-        # Top Right
-        cv2.line(frame, (x + w, y), (x + w - length, y), color, thickness)
-        cv2.line(frame, (x + w, y), (x + w, y + length), color, thickness)
-
-        # Bottom Left
-        cv2.line(frame, (x, y + h), (x + length, y + h), color, thickness)
-        cv2.line(frame, (x, y + h), (x, y + h - length), color, thickness)
-
-        # Bottom Right
-        cv2.line(frame, (x + w, y + h), (x + w - length, y + h), color, thickness)
-        cv2.line(frame, (x + w, y + h), (x + w, y + h - length), color, thickness)
+        self.hud = HUDRenderer()
 
     def start(self):
 
         while True:
 
-            ret, frame = self.cap.read()
+            success, frame = self.cap.read()
 
-            if not ret:
+            if not success:
                 break
 
             if MIRROR_CAMERA:
                 frame = cv2.flip(frame, 1)
-
-            detections = self.detector.detect(frame)
-
-            for (x, y, w, h, conf) in detections:
-
-                self.draw_reticle(frame, x, y, w, h)
-
-                cv2.putText(
-                    frame,
-                    f"Confidence: {conf:.2f}",
-                    (x, y - 10),
-                    cv2.FONT_HERSHEY_SIMPLEX,
-                    0.6,
-                    (255, 200, 0),
-                    2
-                )
 
             current = time.time()
 
@@ -76,40 +43,15 @@ class Camera:
 
             self.prev_time = current
 
-            cv2.putText(
-                frame,
-                "ATLAS • Vision Engine",
-                (20, 40),
-                cv2.FONT_HERSHEY_SIMPLEX,
-                0.8,
-                (255, 200, 0),
-                2
-            )
-
-            cv2.putText(
-                frame,
-                "Sentinel: ACTIVE",
-                (20, 75),
-                cv2.FONT_HERSHEY_SIMPLEX,
-                0.7,
-                (255, 200, 0),
-                2
-            )
-
-            cv2.putText(
-                frame,
-                f"FPS: {int(fps)}",
-                (20, 110),
-                cv2.FONT_HERSHEY_SIMPLEX,
-                0.7,
-                (255, 200, 0),
-                2
-            )
+            self.hud.render(frame, fps)
 
             cv2.imshow(WINDOW_TITLE, frame)
 
-            if cv2.waitKey(1) & 0xFF == ord("q"):
+            key = cv2.waitKey(1)
+
+            if key == ord("q"):
                 break
 
         self.cap.release()
+
         cv2.destroyAllWindows()
