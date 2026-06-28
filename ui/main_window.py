@@ -1,11 +1,11 @@
-from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
-    QLabel,
     QMainWindow,
-    QVBoxLayout,
     QWidget,
+    QStackedLayout,
 )
 
+from ui.camera_widget import CameraWidget
+from hud.overlay import HUDOverlay
 from ui.theme import APP_STYLE
 
 
@@ -17,36 +17,32 @@ class MainWindow(QMainWindow):
 
         self.setWindowTitle("ATLAS")
 
-        self.resize(1280, 720)
+        self.resize(1000, 700)
+
+        self.setMinimumSize(900, 600)
 
         self.setStyleSheet(APP_STYLE)
 
-        central = QWidget()
+        root = QWidget()
+        self.setCentralWidget(root)
 
-        self.setCentralWidget(central)
+        layout = QStackedLayout()
+        layout.setStackingMode(QStackedLayout.StackAll)
 
-        layout = QVBoxLayout()
+        root.setLayout(layout)
 
-        central.setLayout(layout)
+        self.camera = CameraWidget()
 
-        title = QLabel("ATLAS")
+        self.overlay = HUDOverlay()
+        self.overlay.raise_()
 
-        title.setAlignment(Qt.AlignCenter)
+        layout.addWidget(self.camera)
+        layout.addWidget(self.overlay)
 
-        title.setStyleSheet("""
-            font-size:40px;
-            font-weight:bold;
-            color:#00E5FF;
-        """)
+        self.overlay.setGeometry(self.rect())
 
-        subtitle = QLabel("Vision Engine")
+        self.camera.fps_callback = self.overlay.set_data
 
-        subtitle.setAlignment(Qt.AlignCenter)
-
-        layout.addStretch()
-
-        layout.addWidget(title)
-
-        layout.addWidget(subtitle)
-
-        layout.addStretch()
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        self.overlay.setGeometry(self.rect())
