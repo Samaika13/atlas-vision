@@ -39,19 +39,19 @@ class Camera:
 
             current = time.time()
 
-            fps = 1 / (current - self.prev_time)
+            fps = 1 / max(current - self.prev_time, 0.0001)
 
             self.prev_time = current
 
+            # ---------- HUD ----------
             self.hud.render(frame, fps)
 
             cv2.imshow(WINDOW_TITLE, frame)
 
-            key = cv2.waitKey(1)
+            key = cv2.waitKey(1) & 0xFF
 
             if key == ord("q"):
                 break
 
         self.cap.release()
-
         cv2.destroyAllWindows()

@@ -1,7 +1,17 @@
-PRIMARY = (255, 220, 0)
+"""
+ATLAS Color Palette (BGR Format)
+"""
 
-TEXT = (255, 255, 255)
+# Primary cyber blue
+PRIMARY = (255, 180, 0)
 
-SUCCESS = (0, 255, 150)
+# Accent colors
+CYAN = (255, 255, 0)
+GREEN = (0, 255, 150)
+RED = (0, 100, 255)
+WHITE = (255, 255, 255)
 
-BACKGROUND = (25, 25, 25)
+# HUD
+PANEL_BACKGROUND = (25, 25, 25)
+GRID = (50, 50, 50)
+TEXT = WHITE

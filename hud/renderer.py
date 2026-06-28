@@ -1,12 +1,19 @@
-import cv2
 import time
 
-from hud.colors import PRIMARY
+from hud.panel import HUDPanel
+from hud.widgets import LabelWidget
 
 
 class HUDRenderer:
 
+    def __init__(self):
+
+        self.panel = HUDPanel()
+        self.widget = LabelWidget()
+
     def render(self, frame, fps):
+
+        self.panel.draw(frame)
 
         self.draw_title(frame)
 
@@ -14,64 +21,58 @@ class HUDRenderer:
 
         self.draw_fps(frame, fps)
 
+        self.draw_camera(frame)
+
         self.draw_clock(frame)
 
     def draw_title(self, frame):
 
-        cv2.putText(
+        self.widget.draw(
             frame,
             "ATLAS",
-            (20, 40),
-            cv2.FONT_HERSHEY_DUPLEX,
-            1,
-            PRIMARY,
-            2,
-        )
-
-        cv2.putText(
-            frame,
             "Vision Engine",
-            (20, 70),
-            cv2.FONT_HERSHEY_SIMPLEX,
-            0.6,
-            PRIMARY,
-            1,
+            30,
+            45
         )
 
     def draw_status(self, frame):
 
-        cv2.putText(
+        self.widget.draw(
             frame,
-            "STATUS : ONLINE",
-            (20, 105),
-            cv2.FONT_HERSHEY_SIMPLEX,
-            0.6,
-            PRIMARY,
-            2,
+            "STATUS",
+            "ONLINE",
+            30,
+            85
         )
 
     def draw_fps(self, frame, fps):
 
-        cv2.putText(
+        self.widget.draw(
             frame,
-            f"FPS : {int(fps)}",
-            (20, 140),
-            cv2.FONT_HERSHEY_SIMPLEX,
-            0.6,
-            PRIMARY,
-            2,
+            "FPS",
+            str(int(fps)),
+            30,
+            125
+        )
+
+    def draw_camera(self, frame):
+
+        self.widget.draw(
+            frame,
+            "CAMERA",
+            "CONNECTED",
+            30,
+            165
         )
 
     def draw_clock(self, frame):
 
-        now = time.strftime("%I:%M:%S %p")
+        current = time.strftime("%I:%M:%S %p")
 
-        cv2.putText(
+        self.widget.draw(
             frame,
-            now,
-            (20, 175),
-            cv2.FONT_HERSHEY_SIMPLEX,
-            0.6,
-            PRIMARY,
-            2,
+            "TIME",
+            current,
+            30,
+            205
         )
