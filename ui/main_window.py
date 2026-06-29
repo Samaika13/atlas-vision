@@ -1,12 +1,13 @@
 from PySide6.QtWidgets import (
     QMainWindow,
-    QWidget,
-    QStackedLayout,
 )
 
 from ui.camera_widget import CameraWidget
-from hud.overlay import HUDOverlay
 from ui.theme import APP_STYLE
+
+from audio.microphone import Microphone
+
+from PySide6.QtGui import QShortcut, QKeySequence
 
 
 class MainWindow(QMainWindow):
@@ -23,26 +24,18 @@ class MainWindow(QMainWindow):
 
         self.setStyleSheet(APP_STYLE)
 
-        root = QWidget()
-        self.setCentralWidget(root)
-
-        layout = QStackedLayout()
-        layout.setStackingMode(QStackedLayout.StackAll)
-
-        root.setLayout(layout)
-
         self.camera = CameraWidget()
 
-        self.overlay = HUDOverlay()
-        self.overlay.raise_()
+        self.microphone = Microphone()
+        self.microphone.start()
 
-        layout.addWidget(self.camera)
-        layout.addWidget(self.overlay)
+        self.shortcut = QShortcut(
+            QKeySequence("Ctrl+A"),
+            self
+        )
 
-        self.overlay.setGeometry(self.rect())
+        self.shortcut.activated.connect(
+            self.microphone.activate
+        )
 
-        self.camera.fps_callback = self.overlay.set_data
-
-    def resizeEvent(self, event):
-        super().resizeEvent(event)
-        self.overlay.setGeometry(self.rect())
+        self.setCentralWidget(self.camera)

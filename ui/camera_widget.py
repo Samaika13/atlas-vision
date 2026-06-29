@@ -1,11 +1,16 @@
-import time
 import cv2
+import time
 
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QImage, QPixmap
 from PySide6.QtWidgets import QLabel
 
 from core.config import CAMERA_INDEX, MIRROR_CAMERA
+
+from hud.renderer import HUDRenderer
+from vision.face_detector import FaceDetector
+
+from audio.system_state import STATE
 
 
 class CameraWidget(QLabel):
@@ -18,18 +23,15 @@ class CameraWidget(QLabel):
 
         self.cap = cv2.VideoCapture(CAMERA_INDEX)
 
-        if not self.cap.isOpened():
-            raise RuntimeError("Could not open camera.")
-
         self.timer = QTimer()
-
         self.timer.timeout.connect(self.update_frame)
-
-        self.timer.start(30)  # ~33 FPS
+        self.timer.start(30)
 
         self.prev = time.time()
 
-        self.fps_callback = None
+        self.hud = HUDRenderer()
+
+        self.detector = FaceDetector()
 
     def update_frame(self):
 
@@ -41,18 +43,21 @@ class CameraWidget(QLabel):
         if MIRROR_CAMERA:
             frame = cv2.flip(frame, 1)
 
-        # ---------- FPS ----------
-
         current = time.time()
 
         fps = 1 / max(current - self.prev, 0.0001)
+        STATE.set_fps(fps)
 
         self.prev = current
 
-        if self.fps_callback:
-            self.fps_callback(fps, 0)
+        faces = self.detector.detect(frame)
+        STATE.set_faces(len(faces))
 
-        # ---------- Convert to Qt ----------
+        frame = self.hud.draw(
+            frame,
+            STATE,
+            faces
+        )
 
         rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
@@ -63,7 +68,7 @@ class CameraWidget(QLabel):
             w,
             h,
             ch * w,
-            QImage.Format_RGB888,
+            QImage.Format_RGB888
         )
 
         pixmap = QPixmap.fromImage(image)
@@ -71,14 +76,13 @@ class CameraWidget(QLabel):
         pixmap = pixmap.scaled(
             self.size(),
             Qt.KeepAspectRatio,
-            Qt.SmoothTransformation,
+            Qt.SmoothTransformation
         )
 
         self.setPixmap(pixmap)
 
     def closeEvent(self, event):
 
-        if self.cap.isOpened():
-            self.cap.release()
+        self.cap.release()
 
-        super().closeEvent(event)
+        event.accept()

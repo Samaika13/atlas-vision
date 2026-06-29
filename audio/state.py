@@ -1,0 +1,11 @@
+class VoiceState:
+
+    STANDBY = "STANDBY"
+
+    LISTENING = "LISTENING"
+
+    ACTIVATED = "ACTIVATED"
+
+    THINKING = "THINKING"
+
+    SPEAKING = "SPEAKING"
